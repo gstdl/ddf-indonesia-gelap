@@ -1,0 +1,32 @@
+[project]
+name = "brandwatch-indonesia-gelap"
+version = "0.1.0"
+description = "#IndonesiaGelap AI-generated hoax pipeline"
+requires-python = ">=3.12"
+dependencies = [
+    "google-auth>=2.63.1",
+    "imagehash>=4.3.2",
+    "networkx>=3.7",
+    "opencv-python-headless>=5.1.0.95",
+    "pandas>=2.2",
+    "pillow>=13.0.0",
+    "pyarrow>=17",
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+    "scikit-learn>=1.9.1",
+    "sentence-transformers>=6.3.0",
+    "soundfile>=0.14.0",
+    "torch>=2.15.0",
+    "transformers>=5.24.0",
+]
+
+[dependency-groups]
+dev = [
+    "altair>=6.3.0",
+    "marimo>=0.26.0",
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
