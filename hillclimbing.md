@@ -114,3 +114,29 @@ Florence load and warmup are excluded from both columns. The top URL changed for
 ### Suggested next steps
 
 Improve fact-check retrieval and verify whether the post asserts the candidate claim before retesting OCR downstream.
+
+## An assertion check rejects topic matches but misses valid paraphrases
+
+### Hypothesis
+
+An entailment check after cosine retrieval will reject corrections, questions, and related statements while preserving valid paraphrases.
+
+### Decision
+
+Keep the verifier experimental. It rejected all controlled non-assertions but also rejected a valid paraphrase.
+
+### Evidence
+
+Tested 32 written examples across eight August DPR claims and the 60 real posts from the OCR trial. The verifier uses the pipeline’s multilingual mDeBERTa natural language inference model at a fixed 0.80 entailment cutoff. The published fact-check supplies the verdict; the model only checks what the post asserts.
+
+| Measure | Cosine ≥ 0.70 | Cosine ≥ 0.85 | Cosine ≥ 0.70 + entailment ≥ 0.80 |
+| --- | ---: | ---: | ---: |
+| Assertions linked to the intended claim | 5/8 | 1/8 | 4/8 |
+| Non-assertions accepted | 16/24 | 3/24 | 0/24 |
+| Real posts flagged | 14/60 | 0/60 | 0/60 |
+
+Three valid assertions did not reach the verifier with the right candidate; another, about the Soekarno-Hatta airport demonstration, scored 0.65 entailment. The real slice was not fully labeled.
+
+### Suggested next steps
+
+Try several retrieval candidates per post, then calibrate on independently labeled real post–claim pairs.
