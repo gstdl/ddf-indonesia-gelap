@@ -38,3 +38,19 @@ One paired run on Apple M4 Pro (MPS), using the pipeline’s `<OCR>` and `<CAPTI
 The phrase checks used selected text read from the images, ignoring punctuation and whitespace; they measure phrase recovery, not full transcription accuracy. They hide Base’s tendency to join words across lines. Large preserved more phrases in dense images, but both garbled some fine print and financial figures. The caption review was qualitative: neither model consistently described the images better.
 
 **Initial decision: retain Large.** Base nearly halved inference time, but its merged word boundaries enter the [document text](pipeline/layer1_prepare/document.py) used downstream.
+
+## Region-aware Base restores line breaks but misses more dense text than Large
+
+Reran the same 30 images on the same hardware and generation settings with Base’s `<OCR_WITH_REGION>` prompt. Joined nonempty region labels with newlines in model-returned order; did not reorder by coordinates. Captioning was unchanged. Rescored the original outputs and the new run against the same 57 reference phrases. The boundary-aware score requires consecutive whole-word tokens and ignores case and punctuation; it does not measure downstream claim-matching accuracy.
+
+| Measure | Base plain | Base region-aware | Large plain |
+| --- | ---: | ---: | ---: |
+| Mean OCR + caption, seconds/image | 3.54 | 4.91 | 6.99 |
+| OCR outputs with line breaks | 0/30 | 25/30 | 25/30 |
+| Phrases recovered, ignoring word boundaries | 50/57 | 47/57 | 49/57 |
+| Phrases recovered, requiring word boundaries | 10/57 | 45/57 | 49/57 |
+| Dense screenshots and documents, requiring word boundaries | 3/20 | 12/20 | 18/20 |
+
+Region-aware Base took 147.2 s of inference, about 30% less than plain Large. It fixed word joins on posters such as “Bentrokan Mahasiswa,” but still missed claim text that Large recovered, such as the headline phrase “Moratorium Kunker ke Luar Negeri.”
+
+**Decision: retain plain Large.** Region-aware Base was faster and largely addressed word joins, but recovered six fewer of the 20 dense-image phrases. Neither the model nor the prompt changed in the pipeline; no code was reverted.
