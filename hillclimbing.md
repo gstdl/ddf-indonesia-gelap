@@ -223,3 +223,30 @@ The filter missed `berdemonstrasi` and excluded undated reviews; 410 of 486 cach
 ### Suggested next steps
 
 Boost related checks instead of excluding other results. Calibrate acceptance separately on more labeled positives.
+
+## A 10% August boost improved shortlists without dropping any claims
+
+### Hypothesis
+
+Boosting eligible August-related checks will improve shortlist ranks without losing checks excluded by a hard filter.
+
+### Decision
+
+Carry +10% forward as an experimental setting. It was the smallest tested boost to rank all archived positives in the top three without hurting top-three coverage on the controlled cases.
+
+### Evidence
+
+Reused the labeled audit and all 17,571 claims. Multiplied hybrid scores for the 73 August-focused rows by 1.10, 1.25, or 1.50. No acceptance gate was applied.
+
+| Boost | Archived at rank 1 | Archived in top 3 | Controlled at rank 1 | Controlled in top 3 | Reviewed top result changed |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| None | 1/3 | 2/3 | 7/8 | 8/8 | 0/24 |
+| +10% | 2/3 | 3/3 | 8/8 | 8/8 | 2/24 |
+| +25% | 2/3 | 3/3 | 7/8 | 8/8 | 5/24 |
+| +50% | 3/3 | 3/3 | 7/8 | 7/8 | 13/24 |
+
+All known positives stayed in the top ten. At +50%, the Prabowo–student-protesters check fell from first to fourth. None of the changed top results matched a reviewed X post’s claim.
+
+### Suggested next steps
+
+Compare +10% with unboosted hybrid on new labeled real posts. Keep the production ranking and acceptance thresholds unchanged until then.
