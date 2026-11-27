@@ -69,3 +69,19 @@ Ran PaddleOCR 3.7.0 with PaddlePaddle 3.3.1 on the same 30 images and the same 5
 PaddleOCR correctly recovered both the Rp50,000,000 housing allowance and the Rp104,051,903 total from a dense pay chart. Its one scored miss was a headline broken up by unrelated text inserted between two parts of a name. The score measures selected phrase recovery, not full transcription accuracy. PaddleOCR does not generate captions; the combined estimate adds the measured Large caption times for the same images to the PaddleOCR times. The two engines were not run together in the pipeline.
 
 **Decision: advance PaddleOCR with Large captioning to a pipeline trial.** It recovered more target text with an estimated 12% reduction in combined inference time. Check downstream claim matching and wall-clock speed on a larger slice before replacing Large OCR. No production dependency, model, or prompt changed.
+
+## Held-out trial: PaddleOCR was faster after warmup, but did not improve claim matches
+
+Sampled 60 August posts (Jakarta time) from the local 2,000-post run, one per perceptual hash, excluding the 30-image benchmark and its exact perceptual-hash matches. Ran the same PP-OCRv5 mobile detector and Latin recognizer on the M4 Pro CPU with four threads, and Florence-2-large on MPS. The two runs produced identical captions for all 60 images. Rebuilt documents with the pipeline’s text assembly and scored them with the current cosine matcher against the same 17,571 cached Komdigi and Google Fact Check claims.
+
+| Measure | Large OCR + Large captions | PaddleOCR + Large captions |
+| --- | ---: | ---: |
+| OCR only, wall clock after warmup | 261.06 s | 226.45 s |
+| OCR + captions, wall clock after warmup | 336.46 s | 299.21 s |
+| OCR + captions, including the Paddle worker startup and warmup | 336.46 s | 335.58 s |
+| Posts at or above the 0.70 similarity cutoff | 14/60 | 15/60 |
+| Posts at or above the 0.85 claimed-false cutoff | 0/60 | 0/60 |
+
+Florence loading and warmup are excluded from both columns. PaddleOCR cut warm processing time by 11%, but its separate worker erased nearly all of the saving in this run. The top fact-check URL changed for 14 posts; the median absolute change in top cosine score was 0.0089. At 0.70, two posts crossed up and one crossed down. A manual check of those three changes found that none of the top fact-checks addressed the same claim as its post. This is a check of the current matcher on the cached corpus, not a precision or recall estimate.
+
+**Decision: keep Large in the pipeline for now.** PaddleOCR remains a candidate for better transcription, but this trial showed neither better claim matching nor a meaningful speedup including worker startup. Reevaluate after the fact-check corpus is scoped to the August DPR wave and the matcher checks whether the post asserts the same claim. No production code or dependencies changed.
