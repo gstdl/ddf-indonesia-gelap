@@ -192,3 +192,32 @@ The correct fact-checks ranked third, 75th, and third. All three scored below th
 ### Suggested next steps
 
 Compare the full cache with an event-focused subset. Test what happens when keyword and semantic search rank the results together. Measure how often the right fact-check makes the shortlist before tuning the entailment cutoff.
+
+## The August filter moved known matches up but dropped one relevant fact-check
+
+### Hypothesis
+
+Filtering for the August DPR protests and combining keyword and semantic search will rank the right fact-checks higher for the archived examples.
+
+### Decision
+
+Use keyword and semantic search across the full cache as the comparison for the next experiment. The filter improved the ranks of the archived matches but excluded a relevant fact-check.
+
+### Evidence
+
+We compared all 17,571 cached claims with a subset of 73. The subset required a publication date in August or September 2025 in Jakarta time and a whole-word match for a protest-related term. Keyword search used TF-IDF for single words and two-word sequences. The combined ranking used reciprocal rank fusion to combine keyword and semantic ranks. We did not apply a cutoff or verify assertions.
+
+| Corpus and ranking | Archived at rank 1 | Archived in top 3 | Archived in top 10 | Controlled in top 10 |
+| --- | ---: | ---: | ---: | ---: |
+| Full · semantic | 0/3 | 2/3 | 2/3 | 8/8 |
+| Full · keyword | 2/3 | 2/3 | 2/3 | 8/8 |
+| Full · hybrid | 1/3 | 2/3 | 3/3 | 8/8 |
+| Focused · semantic | 2/3 | 3/3 | 3/3 | 7/8 |
+| Focused · keyword | 3/3 | 3/3 | 3/3 | 7/8 |
+| Focused · hybrid | 3/3 | 3/3 | 3/3 | 7/8 |
+
+The filter missed `berdemonstrasi` and left out reviews with no date. Of 486 cached Google rows, 410 had no publication date. None of the first results from the filtered combined ranking matched the claim in its reviewed X post. All three archived matches still scored below the production cosine cutoff.
+
+### Suggested next steps
+
+Raise the scores of related fact-checks instead of excluding others. Use more labeled matches to decide which results to accept.
