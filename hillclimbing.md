@@ -31,3 +31,29 @@ These are selected phrase checks, not transcription accuracy. Neither model cons
 ### Suggested next steps
 
 Test Base with region-aware OCR and score whole-word recovery so joined words count as misses.
+
+## Region-aware Base restores line breaks but misses more dense text than Large
+
+### Hypothesis
+
+Joining Base’s region labels with newlines will restore word boundaries without losing its speed advantage over Large.
+
+### Decision
+
+Keep plain Large. Region-aware Base kept most line breaks and was faster, but recovered six fewer dense-image phrases.
+
+### Evidence
+
+Used the same 30 images and inference settings, joining nonempty `<OCR_WITH_REGION>` labels in model order. Captions were unchanged. Whole-word scoring ignores case and punctuation.
+
+| Measure | Base plain | Base regions | Large plain |
+| --- | ---: | ---: | ---: |
+| OCR + caption per image | 3.54 s | 4.91 s | 6.99 s |
+| OCR outputs with line breaks | 0/30 | 25/30 | 25/30 |
+| Phrases recovered, ignoring word boundaries | 50/57 | 47/57 | 49/57 |
+| Whole-word phrases recovered | 10/57 | 45/57 | 49/57 |
+| Dense whole-word phrases recovered | 3/20 | 12/20 | 18/20 |
+
+### Suggested next steps
+
+Benchmark a dedicated OCR engine on the same images, with particular attention to dense claim text and numbers.
