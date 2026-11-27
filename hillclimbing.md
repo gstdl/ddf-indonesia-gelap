@@ -57,3 +57,30 @@ Used the same 30 images and inference settings, joining nonempty `<OCR_WITH_REGI
 ### Suggested next steps
 
 Benchmark a dedicated OCR engine on the same images, with particular attention to dense claim text and numbers.
+
+## PaddleOCR recovered more claim text and was faster than plain Large
+
+### Hypothesis
+
+PaddleOCR will recover more whole-word phrases and process images faster than Florence-2 Large OCR.
+
+### Decision
+
+Advance PaddleOCR with Large captioning to a held-out trial. Do not add it as a production dependency.
+
+### Evidence
+
+Used PaddleOCR 3.7.0 / PaddlePaddle 3.3.1, PP-OCRv5 mobile detection and Latin-script recognition, and four CPU threads on M4 Pro. Compared the same 30 images, excluding load and warmup.
+
+| Measure | PaddleOCR | Large |
+| --- | ---: | ---: |
+| OCR per image | 4.99 s | 5.85 s |
+| OCR + Large caption per image | 6.14 s (estimated) | 6.99 s (measured) |
+| Whole-word phrases recovered | 56/57 | 49/57 |
+| Dense whole-word phrases recovered | 20/20 | 18/20 |
+
+PaddleOCR recovered both rupiah amounts in a dense pay chart. The combined estimate adds the measured Large caption time; the two engines did not run together in this benchmark.
+
+### Suggested next steps
+
+On held-out posts, measure end-to-end wall time including startup and inspect claim matches that change.
