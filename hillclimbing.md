@@ -133,3 +133,22 @@ For a separate positive check, used three verbatim social-media captions quoted 
 The intended positive checks ranked 3rd, 75th, and 3rd with cosine scores of 0.646, 0.477, and 0.556. None reached the verifier. The negative slice was selected from posts already above the loose cutoff, and the three positives were handpicked archived excerpts, so these are diagnostic counts, not population precision or recall.
 
 **Decision: improve retrieval before tuning the verifier.** Compare an August DPR–focused fact-check corpus and lexical-plus-semantic retrieval on labeled real positives and hard negatives. Measure whether the right check enters the shortlist before adjusting entailment thresholds. No production settings changed.
+
+## August-focused search improved ranking, but the hard filter dropped a relevant check
+
+Compared the full 17,571-claim cache with an August-focused subset: false-rated reviews published August 1 through September 30, 2025 (Jakarta time), with a DPR, protest, or named-event term in the claim text. The subset had 73 claim rows: 70 Komdigi and 3 Google. This was a local filter, not a fresh API search. Compared the existing embedding cosine, keyword TF-IDF over words and adjacent word pairs, and equal-weight reciprocal rank fusion of both rankings. The test measured candidate rank without an acceptance cutoff or assertion verifier.
+
+| Corpus and ranking | Archived positives at rank 1 | Archived positives in top 3 | Archived positives in top 10 | Controlled assertions in top 10 |
+| --- | ---: | ---: | ---: | ---: |
+| Full · semantic | 0/3 | 2/3 | 2/3 | 8/8 |
+| Full · keyword | 2/3 | 2/3 | 2/3 | 8/8 |
+| Full · hybrid | 1/3 | 2/3 | 3/3 | 8/8 |
+| Focused · semantic | 2/3 | 3/3 | 3/3 | 7/8 |
+| Focused · keyword | 3/3 | 3/3 | 3/3 | 7/8 |
+| Focused · hybrid | 3/3 | 3/3 | 3/3 | 7/8 |
+
+Focused keyword and hybrid both moved all three archived positives to rank 1. The focus rule also dropped the check about Prabowo meeting student protesters: its date qualified, but `berdemonstrasi` did not match the whole-word term list. Undated reviews could not pass the filter; 410 of 486 cached Google review rows lack a publication date. The archived targets’ cosine scores remained below 0.70 in both corpora, so the current cosine gate would still block them.
+
+None of the focused hybrid’s top-ranked candidates for the same 24 reviewed X posts asserted the same claim. For example, a screenshot about the police chief’s apology for the Brimob vehicle collision retrieved a fact-check about a Brimob sniper. A higher candidate rank is not a verdict. The archived positives and controlled examples are small, reused diagnostic sets, not a new held-out estimate.
+
+**Decision: keep full-corpus hybrid as the next experimental baseline.** It recovered all three archived positives in the top 10 without excluding a known check. Test August focus as a ranking boost rather than a hard filter, and calibrate acceptance separately on more labeled real positives. No production settings changed.
