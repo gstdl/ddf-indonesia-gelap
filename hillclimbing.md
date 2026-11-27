@@ -116,3 +116,20 @@ Reused the 32 controlled examples, 60 real posts, and 17,571 cached claims. Rank
 Top-3 recovered the asset-forfeiture claim at rank 2. It also linked a report about a condolence visit for Affan Kurniawan to an unrelated fact-check about the Sukoharjo regent allowing public celebrations. At the 0.60 floor, none of the tested list sizes recovered another valid assertion, and top-10 flagged two additional real posts whose selected checks also did not address their claims. All eight intended claims appeared somewhere in the unfiltered top 10, but two scored below 0.60. The widest test scored 502 pairs in 19.99 seconds on MPS, including tokenization and excluding model loading; pair counts reflect scoring the entire eligible shortlist.
 
 **Decision: do not widen the production matcher.** Top-3 is the smallest tested list that recovered the valid match, but it introduced a real false match. Use it as a candidate configuration for evaluation on labeled real posts rather than increasing k or lowering the floor based on these fixtures. No production code or thresholds changed.
+
+## On real posts, the verifier rejected mismatches but retrieval missed every known positive
+
+Kept the 17,571-claim corpus and all cutoffs fixed. From 1,314 distinct August 2025 X documents in the local sample, drew 24 posts at random from the 301 with top cosine ≥ 0.70 after excluding the earlier 60-post trial. Reviewed the original post text and available OCR/captions against each of its eligible top-three claims before seeing verifier scores. None of the 50 candidate pairs asserted the same claim. This labels candidate pairs, not the posts’ overall veracity; a relevant check might exist outside the shortlist.
+
+For a separate positive check, used three verbatim social-media captions quoted in Komdigi reviews about the protest wave: [Sahroni’s household employee](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-art-ahmad-sahroni-luka-parah-akibat-massa-menyerang-kediaman-ahmad-sahroni), [the UN dissolving the DPR](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-pbb-gelar-sidang-darurat-resmi-bubarkan-dpr-indonesia), and [a legislator’s car being damaged](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-mobil-anggota-dpr-dirusak-pendemo). These are archived excerpts, not full posts drawn from the X export.
+
+| Frozen variant | Incorrect links on reviewed X posts | Correct links on archived positives |
+| --- | ---: | ---: |
+| Top-1 cosine ≥ 0.70 | 24/24 | 0/3 |
+| Top-1 cosine ≥ 0.85 | 1/24 | 0/3 |
+| Top-1 cosine ≥ 0.70 + entailment ≥ 0.80 | 0/24 | 0/3 |
+| Top-3 cosine ≥ 0.70 + entailment ≥ 0.80 | 0/24 | 0/3 |
+
+The intended positive checks ranked 3rd, 75th, and 3rd with cosine scores of 0.646, 0.477, and 0.556. None reached the verifier. The negative slice was selected from posts already above the loose cutoff, and the three positives were handpicked archived excerpts, so these are diagnostic counts, not population precision or recall.
+
+**Decision: improve retrieval before tuning the verifier.** Compare an August DPR–focused fact-check corpus and lexical-plus-semantic retrieval on labeled real positives and hard negatives. Measure whether the right check enters the shortlist before adjusting entailment thresholds. No production settings changed.
