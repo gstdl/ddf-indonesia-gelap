@@ -221,3 +221,30 @@ The filter missed `berdemonstrasi` and left out reviews with no date. Of 486 cac
 ### Suggested next steps
 
 Raise the scores of related fact-checks instead of excluding others. Use more labeled matches to decide which results to accept.
+
+## A 10% August boost moved all archived matches into the top three
+
+### Hypothesis
+
+Raising scores for August-related fact-checks will move known matches up the list without excluding the other fact-checks.
+
+### Decision
+
+Test a 10% boost again before changing production. It was the smallest boost that put all three archived matches in the top three and kept all eight test assertions there.
+
+### Evidence
+
+We used the same labeled examples and kept all 17,571 claims. We multiplied the combined scores for the 73 August-related claims by 1.10, 1.25, or 1.50. We compared ranks without deciding whether to accept any match.
+
+| Boost | Archived at rank 1 | Archived in top 3 | Controlled at rank 1 | Controlled in top 3 | Reviewed top result changed |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| None | 1/3 | 2/3 | 7/8 | 8/8 | 0/24 |
+| +10% | 2/3 | 3/3 | 8/8 | 8/8 | 2/24 |
+| +25% | 2/3 | 3/3 | 7/8 | 8/8 | 5/24 |
+| +50% | 3/3 | 3/3 | 7/8 | 7/8 | 13/24 |
+
+All known matches stayed in the top ten. With a 50% boost, the fact-check about Prabowo and the student protesters fell from first to fourth. None of the changed first results matched the claim in its reviewed X post.
+
+### Suggested next steps
+
+Compare the 10% boost with the same ranking without a boost on newly labeled real posts. Keep production ranking and cutoffs unchanged until then.
