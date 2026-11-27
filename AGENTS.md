@@ -11,3 +11,13 @@ No fallbacks: Minimize creating unnecessary fallbacks (defensive scaffholding) u
 DUMB: Follow the D.U.M.B. (Descriptive, Uniform, Minimal, and Basic.) principle
 KISS: Code must be kept simple and stupid
 So what: Use declarative plot title, section titles that adds interpretive power for the reader. Readers should understand the key takeaways with ease.
+
+## Research workflow
+
+This pipeline supports research. It is not a production misinformation detector.
+
+Use fact-check retrieval to find candidates for human review. Do not treat similarity scores or match counts as evidence of hoax prevalence. If the study needs a prevalence estimate, label a representative sample that includes posts the matcher did not flag. Run further evaluations only when they answer a specific research question.
+
+## Writing
+
+When asked to remove AI writing patterns, use the repository's [unslop skill](.agents/skills/unslop/SKILL.md).
