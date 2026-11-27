@@ -84,3 +84,33 @@ PaddleOCR recovered both rupiah amounts in a dense pay chart. The combined estim
 ### Suggested next steps
 
 On held-out posts, measure end-to-end wall time including startup and inspect claim matches that change.
+
+## Held-out trial: PaddleOCR was faster after warmup, but did not improve claim matches
+
+### Hypothesis
+
+Replacing Large OCR with PaddleOCR will improve claim matching and reduce total processing time on unseen August posts.
+
+### Decision
+
+Keep Large. PaddleOCR saved 11% after warmup but almost none with worker startup included. None of the score-cutoff changes linked the same claim.
+
+### Evidence
+
+[Held-out OCR trial](scripts/hillclimb/ocr_trial.py): 60 August posts, one per perceptual hash, excluding the benchmark and its exact hash matches. The local sample JSON is a list of `post_id`/`media_path` objects; the warmup JSON is a media path string. Run the `large` and `hybrid` arms separately, using `--worker-python` for a separate PaddleOCR environment, then score their outputs against the original data root.
+
+Both arms used Large captions and the current cosine matcher over 17,571 cached Komdigi and Google fact-check claims.
+
+| Measure | Large OCR + caption | PaddleOCR + Large caption |
+| --- | ---: | ---: |
+| OCR after warmup | 261.06 s | 226.45 s |
+| OCR + caption after warmup | 336.46 s | 299.21 s |
+| OCR + caption with Paddle worker startup and warmup | 336.46 s | 335.58 s |
+| Top cosine ≥ 0.70 | 14/60 | 15/60 |
+| Top cosine ≥ 0.85 | 0/60 | 0/60 |
+
+Florence load and warmup are excluded from both columns. The top URL changed for 14 posts; two crossed up and one down at 0.70. Manual review found all three links were mismatches, not a precision or recall estimate.
+
+### Suggested next steps
+
+Improve fact-check retrieval and verify whether the post asserts the candidate claim before retesting OCR downstream.
