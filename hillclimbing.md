@@ -112,3 +112,29 @@ Neither column includes loading or warming up Florence. The top fact-check URL c
 ### Suggested next steps
 
 Improve fact-check retrieval and verify that posts make the same claim as their candidate fact-checks. Then retest how OCR affects claim matching.
+
+## The assertion check rejected all 24 non-assertions but missed a valid paraphrase
+
+### Hypothesis
+
+An entailment check after cosine retrieval will reject corrections, questions, and related statements without rejecting valid paraphrases.
+
+### Decision
+
+Do not add the verifier to production. It rejected all 24 test examples that did not assert the claim, but also rejected a valid paraphrase.
+
+### Evidence
+
+We tested 32 written examples for eight August DPR claims and 60 real posts from the OCR trial. We used the pipeline's multilingual mDeBERTa natural language inference model and required an entailment score of at least 0.80. The model checks whether the post makes the claim. The published fact-check supplies the verdict.
+
+| Measure | Cosine ≥ 0.70 | Cosine ≥ 0.85 | Cosine ≥ 0.70 + entailment ≥ 0.80 |
+| --- | ---: | ---: | ---: |
+| Assertions linked to the intended claim | 5/8 | 1/8 | 4/8 |
+| Non-assertions accepted | 16/24 | 3/24 | 0/24 |
+| Real posts flagged | 14/60 | 0/60 | 0/60 |
+
+Three valid assertions did not reach the verifier with the right candidate. The verifier scored a fourth, about the Soekarno-Hatta airport demonstration, at 0.65. We did not label all the real posts.
+
+### Suggested next steps
+
+Try checking more than one candidate per post. Then tune the cutoff on pairs of real posts and claims that reviewers label independently.
