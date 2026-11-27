@@ -248,3 +248,33 @@ All known matches stayed in the top ten. With a 50% boost, the fact-check about 
 ### Suggested next steps
 
 Compare the 10% boost with the same ranking without a boost on newly labeled real posts. Keep production ranking and cutoffs unchanged until then.
+
+## The 10% August boost changed rankings without finding a confirmed match
+
+### Hypothesis
+
+On August X posts not used in the earlier claim-matching trials, a 10% boost will put more matching fact-checks in the top three than the same ranking without a boost.
+
+### Decision
+
+Do not deploy the boost. It changed which fact-check ranked first for three posts. Neither the old nor the new first result matched the claim in any of those posts. The audit found no confirmed matches, so it cannot tell us whether the boost improves recall.
+
+At the tenth-experiment review, none of the decisions called for a production change. Keep Florence-2 Large, the current cosine matcher, and the existing cutoffs.
+
+### Evidence
+
+We kept the 17,571 cached claims and the 73 boost-eligible claims from the previous experiment. We excluded posts from the earlier 60-post OCR trial and 24-post claim audit. Of the 36 new posts, we picked 20 by cosine similarity to distinct August-related claims and drew 16 at random from the remaining posts with seed 2710. We chose the sample before scoring either combined ranking.
+
+We reviewed 150 distinct post and fact-check pairs without seeing the ranks or which method returned a candidate. For each post, we reviewed the top three from both rankings, the first result from cosine alone, and the claim used to select the post if there was one. We marked 146 pairs as mismatches and four as unclear. Both rankings put the same four unclear pairs in their top three.
+
+| Measure | No boost | 10% boost |
+| --- | ---: | ---: |
+| Posts with a confirmed match at rank 1 | 0/36 | 0/36 |
+| Posts with a confirmed match in the top three | 0/36 | 0/36 |
+| Posts with an unclear pair at rank 1 | 3/36 | 3/36 |
+
+The boost changed which fact-checks appeared in the top three for seven posts. The sample does not estimate precision or recall across the full export.
+
+### Suggested next steps
+
+Collect a separate set of X posts with confirmed fact-check matches before retesting the boost. Keep the original media where possible so reviewers can resolve claims about specific clips. Measure whether the known match reaches the top three before testing any change to the acceptance cutoffs.
