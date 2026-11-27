@@ -196,3 +196,32 @@ Positive targets ranked 3rd, 75th, and 3rd, below the 0.70 floor in every case. 
 ### Suggested next steps
 
 Compare event-focused and lexical-plus-semantic retrieval. Measure whether the right check enters the shortlist before tuning entailment.
+
+## August-focused search improved ranking, but the hard filter dropped a relevant check
+
+### Hypothesis
+
+An August DPR corpus filter and keyword retrieval alongside semantic search will surface archived positives earlier.
+
+### Decision
+
+Keep full-corpus hybrid as the experimental baseline. The hard filter improved rank but removed a known check.
+
+### Evidence
+
+[Retrieval comparison](scripts/hillclimb/august_retrieval.py) uses the labeled audit inputs. Compared the full 17,571-claim cache with 73 claims published in August–September 2025 Jakarta time and matching a protest-related whole-word term. Keyword retrieval used word and bigram TF-IDF; hybrid combined it with semantic cosine via reciprocal rank fusion. No acceptance cutoff or assertion verifier was applied.
+
+| Corpus and ranking | Archived at rank 1 | Archived in top 3 | Archived in top 10 | Controlled in top 10 |
+| --- | ---: | ---: | ---: | ---: |
+| Full · semantic | 0/3 | 2/3 | 2/3 | 8/8 |
+| Full · keyword | 2/3 | 2/3 | 2/3 | 8/8 |
+| Full · hybrid | 1/3 | 2/3 | 3/3 | 8/8 |
+| Focused · semantic | 2/3 | 3/3 | 3/3 | 7/8 |
+| Focused · keyword | 3/3 | 3/3 | 3/3 | 7/8 |
+| Focused · hybrid | 3/3 | 3/3 | 3/3 | 7/8 |
+
+The filter missed `berdemonstrasi` and excluded undated reviews; 410 of 486 cached Google rows had no publication date. None of the focused hybrid’s first results matched the 24 reviewed X posts. All three archived positives remained below the production cosine floor.
+
+### Suggested next steps
+
+Boost related checks instead of excluding other results. Calibrate acceptance separately on more labeled positives.
