@@ -140,3 +140,30 @@ Three valid assertions did not reach the verifier with the right candidate; anot
 ### Suggested next steps
 
 Try several retrieval candidates per post, then calibrate on independently labeled real post–claim pairs.
+
+## Top-3 recovered one valid match and introduced one real mismatch
+
+### Hypothesis
+
+Verifying the first three candidates instead of the first one will recover valid claims missed by top-1 without adding false matches.
+
+### Decision
+
+Keep top-3 as an evaluation setting only. It recovered one valid assertion but also introduced an unrelated link on a real post.
+
+### Evidence
+
+Reused the controlled examples, 60 real posts, and 0.80 entailment cutoff. Selected the first passing candidate. At the 0.70 cosine floor:
+
+| Candidates | Intended claims eligible | Correct assertions accepted | Non-assertions accepted | Real posts flagged | Pairs scored |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 5/8 | 4/8 | 0/24 | 0/60 | 36 |
+| 3 | 6/8 | 5/8 | 0/24 | 1/60 | 55 |
+| 5 | 6/8 | 5/8 | 0/24 | 1/60 | 60 |
+| 10 | 6/8 | 5/8 | 0/24 | 1/60 | 66 |
+
+Top-3 recovered the asset-forfeiture claim at rank 2. Its mismatch linked a condolence visit to a fact-check about public celebrations. Lowering the floor to 0.60 recovered no more valid assertions.
+
+### Suggested next steps
+
+Compare top-1 and top-3 on labeled real posts before widening the shortlist or lowering the floor in production.
