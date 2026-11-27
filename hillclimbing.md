@@ -84,3 +84,31 @@ PaddleOCR read both rupiah amounts in a dense pay chart. We added the measured L
 ### Suggested next steps
 
 Measure the total time including startup on a separate sample. Review posts whose best fact-check changes.
+
+## PaddleOCR saved time after warmup but did not improve claim matching
+
+### Hypothesis
+
+Using PaddleOCR instead of Large OCR will improve claim matching and cut the total processing time on August posts outside the first benchmark.
+
+### Decision
+
+Keep Large. PaddleOCR cut total time by 11% after warmup. Starting and warming up the Paddle worker erased nearly all of that saving. The fact-checks for all three posts that crossed the 0.70 cutoff were about different claims.
+
+### Evidence
+
+We tested 60 August posts, one per perceptual hash. We left out the earlier benchmark images and images with the same hashes. Both runs used Large captions and the same cosine matcher against 17,571 cached claims from Komdigi and Google Fact Check.
+
+| Measure | Large OCR + caption | PaddleOCR + Large caption |
+| --- | ---: | ---: |
+| OCR after warmup | 261.06 s | 226.45 s |
+| OCR + caption after warmup | 336.46 s | 299.21 s |
+| OCR + caption with Paddle worker startup and warmup | 336.46 s | 335.58 s |
+| Top cosine ≥ 0.70 | 14/60 | 15/60 |
+| Top cosine ≥ 0.85 | 0/60 | 0/60 |
+
+Neither column includes loading or warming up Florence. The top fact-check URL changed for 14 posts. Two posts moved above 0.70 and one fell below it. We checked those three posts by hand. That review does not estimate precision or recall.
+
+### Suggested next steps
+
+Improve fact-check retrieval and verify that posts make the same claim as their candidate fact-checks. Then retest how OCR affects claim matching.
