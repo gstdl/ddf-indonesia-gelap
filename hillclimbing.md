@@ -167,3 +167,30 @@ Top-3 recovered the asset-forfeiture claim at rank 2. Its mismatch linked a cond
 ### Suggested next steps
 
 Compare top-1 and top-3 on labeled real posts before widening the shortlist or lowering the floor in production.
+
+## On real posts, the verifier rejected mismatches but retrieval missed every known positive
+
+### Hypothesis
+
+The fixed entailment gate will reject unrelated checks on real posts while retaining known claim matches.
+
+### Decision
+
+Prioritize retrieval for the next experiment; leave the production matcher unchanged. The verifier rejected reviewed mismatches, but none of the three archived positives reached it.
+
+### Evidence
+
+Reviewed 24 X posts drawn from the high-similarity slice, after excluding the earlier OCR trial; none of their 50 eligible candidate pairs matched. Three separate social-media quotes from Komdigi reviews supplied known positives: [Sahroni’s household employee](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-art-ahmad-sahroni-luka-parah-akibat-massa-menyerang-kediaman-ahmad-sahroni), [the UN dissolving the DPR](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-pbb-gelar-sidang-darurat-resmi-bubarkan-dpr-indonesia), and [a legislator’s car](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-mobil-anggota-dpr-dirusak-pendemo).
+
+| Variant | Incorrect links on reviewed X posts | Correct links on archived positives |
+| --- | ---: | ---: |
+| Top-1 cosine ≥ 0.70 | 24/24 | 0/3 |
+| Top-1 cosine ≥ 0.85 | 1/24 | 0/3 |
+| Top-1 cosine ≥ 0.70 + entailment ≥ 0.80 | 0/24 | 0/3 |
+| Top-3 cosine ≥ 0.70 + entailment ≥ 0.80 | 0/24 | 0/3 |
+
+Positive targets ranked 3rd, 75th, and 3rd, below the 0.70 floor in every case. The handpicked excerpts and high-similarity negative slice give diagnostic counts, not population precision or recall.
+
+### Suggested next steps
+
+Compare event-focused and lexical-plus-semantic retrieval. Measure whether the right check enters the shortlist before tuning entailment.
