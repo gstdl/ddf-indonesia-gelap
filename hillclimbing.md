@@ -85,3 +85,19 @@ Sampled 60 August posts (Jakarta time) from the local 2,000-post run, one per pe
 Florence loading and warmup are excluded from both columns. PaddleOCR cut warm processing time by 11%, but its separate worker erased nearly all of the saving in this run. The top fact-check URL changed for 14 posts; the median absolute change in top cosine score was 0.0089. At 0.70, two posts crossed up and one crossed down. A manual check of those three changes found that none of the top fact-checks addressed the same claim as its post. This is a check of the current matcher on the cached corpus, not a precision or recall estimate.
 
 **Decision: keep Large in the pipeline for now.** PaddleOCR remains a candidate for better transcription, but this trial showed neither better claim matching nor a meaningful speedup including worker startup. Reevaluate after the fact-check corpus is scoped to the August DPR wave and the matcher checks whether the post asserts the same claim. No production code or dependencies changed.
+
+## An assertion check rejects topic matches but misses valid paraphrases
+
+Kept the current cosine retriever and the same 17,571 cached Komdigi and Google Fact Check claims. For each post with a top cosine score of at least 0.70, tested whether the post document entailed that candidate’s claim using the same multilingual mDeBERTa NLI checkpoint already used for reply classification. Used an entailment cutoff of 0.80, fixed before the run. The experiment checks whether the post asserts a claim; the existing fact-check supplies the verdict.
+
+The controlled set used eight published August DPR claims, with four written variants per claim: a paraphrased assertion, a correction, a related but different statement, and a question or unconfirmed report. These 32 examples are a diagnostic, not a representative sample of live posts.
+
+| Measure | Cosine ≥ 0.70 | Cosine ≥ 0.85 | Cosine ≥ 0.70 + entailment ≥ 0.80 |
+| --- | ---: | ---: | ---: |
+| Assertions linked to the intended claim | 5/8 | 1/8 | 4/8 |
+| Non-assertions accepted | 16/24 | 3/24 | 0/24 |
+| Real posts flagged on the earlier 60-image slice | 14/60 | 0/60 | 0/60 |
+
+Two assertions did not rank the intended claim first; one ranked it first below 0.70. The verifier then rejected one of the five assertions that reached it with the right candidate: a paraphrase of the Soekarno-Hatta airport demonstration claim (entailment 0.65). The verifier took 8.94 seconds for 36 pairs on MPS, excluding model setup and tokenization. The real slice was not fully labeled, so its lower flag count does not establish higher precision or preserved recall.
+
+**Decision: keep the assertion check experimental.** Test a top-k candidate list to address retrieval misses, then calibrate the verifier on independently labeled real post–claim pairs before changing the pipeline. No production code, cutoffs, or dependencies changed.
