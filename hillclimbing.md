@@ -2,7 +2,7 @@
 
 Baseline: `0f7a92e`, used for the 2,000-post sample run. The [README](README.md) records the shift from February–March #IndonesiaGelap to the August DPR protest wave, and the proposed spam, hoax, AI-text, and Grok evidence rules. Those research decisions did not change the baseline pipeline. See the [progress deck](notebooks/progress_2026-11-26.py) for the earlier scope and validation plan.
 
-Run the linked experiments from the repository root using `python -m scripts.hillclimb.<module> --help` for arguments. The original Brandwatch sample, review labels, media, and model outputs are local inputs, not part of the repository. Exact reproduction requires the original data snapshot and selections.
+This log records experimental results. None of these trials changed the production pipeline.
 
 ## Florence-2 Base vs. Large: faster, but not a drop-in replacement
 
@@ -16,7 +16,7 @@ Keep Large in the pipeline. Base nearly halved inference time but joined words a
 
 ### Evidence
 
-[Benchmark and scorer](scripts/hillclimb/florence.py): 30 August images on Apple M4 Pro (MPS), three beams, 1,024-token cap, excluding load and warmup. Use the local candidate CSV (`id,media_path`) and reference phrases (JSON keyed by candidate ID).
+Compared both models on 30 August images on Apple M4 Pro (MPS), with three beams and a 1,024-token cap. Timings exclude loading and warmup.
 
 | Measure | Base | Large |
 | --- | ---: | ---: |
