@@ -165,3 +165,30 @@ Checking three candidates found the asset-forfeiture claim in second place. It a
 ### Suggested next steps
 
 Compare one and three candidates on labeled real posts before changing the number of candidates or the cutoff in production.
+
+## The verifier rejected the mismatches, but no archived positive reached it
+
+### Hypothesis
+
+The same entailment cutoff will reject unrelated fact-checks on real posts and keep known matches.
+
+### Decision
+
+Test better retrieval before changing the production matcher. The verifier rejected the unrelated checks, but the three known matches all scored too low to reach it.
+
+### Evidence
+
+We reviewed 24 X posts with high cosine scores and excluded posts from the earlier OCR trial. In all 50 eligible pairs, the post and fact-check addressed different claims. We took three known matches from social media quotes in Komdigi fact-checks: [Sahroni's household employee](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-art-ahmad-sahroni-luka-parah-akibat-massa-menyerang-kediaman-ahmad-sahroni), [the UN dissolving the DPR](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-pbb-gelar-sidang-darurat-resmi-bubarkan-dpr-indonesia), and [a legislator's car](https://www.komdigi.go.id/berita/berita-hoaks/detail/hoaks-mobil-anggota-dpr-dirusak-pendemo).
+
+| Variant | Incorrect links on reviewed X posts | Correct links on archived positives |
+| --- | ---: | ---: |
+| Top-1 cosine ≥ 0.70 | 24/24 | 0/3 |
+| Top-1 cosine ≥ 0.85 | 1/24 | 0/3 |
+| Top-1 cosine ≥ 0.70 + entailment ≥ 0.80 | 0/24 | 0/3 |
+| Top-3 cosine ≥ 0.70 + entailment ≥ 0.80 | 0/24 | 0/3 |
+
+The correct fact-checks ranked third, 75th, and third. All three scored below the 0.70 cosine cutoff. The three handpicked quotes and 24 high-scoring posts do not estimate precision or recall across all posts.
+
+### Suggested next steps
+
+Compare the full cache with an event-focused subset. Test what happens when keyword and semantic search rank the results together. Measure how often the right fact-check makes the shortlist before tuning the entailment cutoff.
