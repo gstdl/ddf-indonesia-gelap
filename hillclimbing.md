@@ -138,3 +138,30 @@ Three valid assertions did not reach the verifier with the right candidate. The 
 ### Suggested next steps
 
 Try checking more than one candidate per post. Then tune the cutoff on pairs of real posts and claims that reviewers label independently.
+
+## Checking three candidates found one more valid match and one false match
+
+### Hypothesis
+
+Checking the first three candidates instead of only the first will find valid matches without adding false ones.
+
+### Decision
+
+Use three candidates for evaluation only. The extra valid match came with an unrelated fact-check on a real post.
+
+### Evidence
+
+We reused the written examples and 60 real posts and kept the entailment cutoff at 0.80. We picked the first candidate that met the cutoff. The table shows results at a cosine cutoff of 0.70.
+
+| Candidates | Intended claims eligible | Correct assertions accepted | Non-assertions accepted | Real posts flagged | Pairs scored |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 5/8 | 4/8 | 0/24 | 0/60 | 36 |
+| 3 | 6/8 | 5/8 | 0/24 | 1/60 | 55 |
+| 5 | 6/8 | 5/8 | 0/24 | 1/60 | 60 |
+| 10 | 6/8 | 5/8 | 0/24 | 1/60 | 66 |
+
+Checking three candidates found the asset-forfeiture claim in second place. It also linked a post about a condolence visit to a fact-check about public celebrations. Lowering the cosine cutoff to 0.60 found no more valid matches.
+
+### Suggested next steps
+
+Compare one and three candidates on labeled real posts before changing the number of candidates or the cutoff in production.
