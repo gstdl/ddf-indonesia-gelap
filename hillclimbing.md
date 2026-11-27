@@ -54,3 +54,18 @@ Reran the same 30 images on the same hardware and generation settings with Base�
 Region-aware Base took 147.2 s of inference, about 30% less than plain Large. It fixed word joins on posters such as “Bentrokan Mahasiswa,” but still missed claim text that Large recovered, such as the headline phrase “Moratorium Kunker ke Luar Negeri.”
 
 **Decision: retain plain Large.** Region-aware Base was faster and largely addressed word joins, but recovered six fewer of the 20 dense-image phrases. Neither the model nor the prompt changed in the pipeline; no code was reverted.
+
+## PaddleOCR recovered more claim text and was faster than plain Large
+
+Ran PaddleOCR 3.7.0 with PaddlePaddle 3.3.1 on the same 30 images and the same 57 reference phrases. Used PP-OCRv5 mobile detection and Latin-script recognition (which supports Indonesian) on the Apple M4 Pro CPU with four threads. Disabled document orientation, unwarping, and text-line orientation. Joined text lines in model-returned order. Times exclude setup and warmup.
+
+| Measure | PaddleOCR | Florence-2-large plain |
+| --- | ---: | ---: |
+| Mean OCR, seconds/image | 4.99 | 5.85 |
+| Mean OCR + Large caption, seconds/image | 6.14 (estimated) | 6.99 (measured) |
+| Phrases recovered, requiring word boundaries | 56/57 | 49/57 |
+| Dense screenshots and documents, requiring word boundaries | 20/20 | 18/20 |
+
+PaddleOCR correctly recovered both the Rp50,000,000 housing allowance and the Rp104,051,903 total from a dense pay chart. Its one scored miss was a headline broken up by unrelated text inserted between two parts of a name. The score measures selected phrase recovery, not full transcription accuracy. PaddleOCR does not generate captions; the combined estimate adds the measured Large caption times for the same images to the PaddleOCR times. The two engines were not run together in the pipeline.
+
+**Decision: advance PaddleOCR with Large captioning to a pipeline trial.** It recovered more target text with an estimated 12% reduction in combined inference time. Check downstream claim matching and wall-clock speed on a larger slice before replacing Large OCR. No production dependency, model, or prompt changed.
