@@ -23,4 +23,4 @@ flowchart TD
 
 ## What the matcher can tell us
 
-The matcher finds candidate fact-checks for human review. Its match count is not an estimate of hoax prevalence. A prevalence estimate would require labeling a representative sample that includes posts the matcher did not flag. The [experiment log](hillclimbing.md) records the completed trials and their limitations.
+The matcher finds candidate fact-checks for human review. Its match count is not an estimate of hoax prevalence. A prevalence estimate would require labeling a representative sample that includes posts the matcher did not flag.
