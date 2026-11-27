@@ -1,22 +1,22 @@
 # Hillclimbing log
 
-Baseline: `0f7a92e`, used for the 2,000-post sample run. The [README](README.md) records the shift from February–March #IndonesiaGelap to the August DPR protest wave, and the proposed spam, hoax, AI-text, and Grok evidence rules. Those research decisions did not change the baseline pipeline. See the [progress deck](notebooks/progress_2026-11-26.py) for the earlier scope and validation plan.
+The 2,000-post sample run used commit `0f7a92e`. The [README](README.md) records the shift to the August DPR protests and proposes how to label spam and assess hoax claims, AI-generated text, and Grok replies. The [progress deck](notebooks/progress_2026-11-26.py) covers the earlier February and March #IndonesiaGelap scope and validation plan.
 
-This log records experimental results. None of these trials changed the production pipeline.
+None of the experiments below changed the production pipeline.
 
-## Florence-2 Base vs. Large: faster, but not a drop-in replacement
+## Florence-2 Base ran faster but missed more phrases in dense images
 
 ### Hypothesis
 
-Florence-2 Base will cut image OCR and caption time without losing text needed for claim matching.
+Florence-2 Base will read image text and write captions faster than Large without losing text needed to match claims to fact-checks.
 
 ### Decision
 
-Keep Large in the pipeline. Base nearly halved inference time but joined words across lines and missed more dense-image phrases.
+Keep Large in production. Base took about half as long, but ran words together across lines and missed more reference phrases in dense images.
 
 ### Evidence
 
-Compared both models on 30 August images on Apple M4 Pro (MPS), with three beams and a 1,024-token cap. Timings exclude loading and warmup.
+We ran both models on 30 images from August posts using an Apple M4 Pro with MPS. Both used three beams and a 1,024-token limit. Timings exclude model loading and warmup.
 
 | Measure | Base | Large |
 | --- | ---: | ---: |
@@ -26,8 +26,8 @@ Compared both models on 30 August images on Apple M4 Pro (MPS), with three beams
 | Dense-image phrase checks | 15/20 | 18/20 |
 | OCR outputs with line breaks | 0/30 | 25/30 |
 
-These are selected phrase checks, not transcription accuracy. Neither model consistently produced better captions in the qualitative review.
+The counts cover selected phrases, not the full transcripts. In a manual review, neither model consistently wrote better captions.
 
 ### Suggested next steps
 
-Test Base with region-aware OCR and score whole-word recovery so joined words count as misses.
+Test region-aware OCR with Base. Require whole words when scoring so words that run together count as misses.
