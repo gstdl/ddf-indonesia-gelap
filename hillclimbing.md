@@ -101,3 +101,18 @@ The controlled set used eight published August DPR claims, with four written var
 Two assertions did not rank the intended claim first; one ranked it first below 0.70. The verifier then rejected one of the five assertions that reached it with the right candidate: a paraphrase of the Soekarno-Hatta airport demonstration claim (entailment 0.65). The verifier took 8.94 seconds for 36 pairs on MPS, excluding model setup and tokenization. The real slice was not fully labeled, so its lower flag count does not establish higher precision or preserved recall.
 
 **Decision: keep the assertion check experimental.** Test a top-k candidate list to address retrieval misses, then calibrate the verifier on independently labeled real post–claim pairs before changing the pipeline. No production code, cutoffs, or dependencies changed.
+
+## Top-3 recovered one valid match and introduced one real mismatch
+
+Reused the 32 controlled examples, 60 real posts, and 17,571 cached claims. Ranked candidate claim rows by cosine similarity and selected the highest-ranked candidate passing the same 0.80 entailment cutoff. Tested top 1, 3, 5, and 10 at the existing 0.70 cosine floor and a diagnostic 0.60 floor.
+
+| Candidates per post at the 0.70 floor | Intended claims eligible for verification | Correct assertions accepted | Controlled non-assertions accepted | Real posts flagged | Pairs scored across both slices |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 5/8 | 4/8 | 0/24 | 0/60 | 36 |
+| 3 | 6/8 | 5/8 | 0/24 | 1/60 | 55 |
+| 5 | 6/8 | 5/8 | 0/24 | 1/60 | 60 |
+| 10 | 6/8 | 5/8 | 0/24 | 1/60 | 66 |
+
+Top-3 recovered the asset-forfeiture claim at rank 2. It also linked a report about a condolence visit for Affan Kurniawan to an unrelated fact-check about the Sukoharjo regent allowing public celebrations. At the 0.60 floor, none of the tested list sizes recovered another valid assertion, and top-10 flagged two additional real posts whose selected checks also did not address their claims. All eight intended claims appeared somewhere in the unfiltered top 10, but two scored below 0.60. The widest test scored 502 pairs in 19.99 seconds on MPS, including tokenization and excluding model loading; pair counts reflect scoring the entire eligible shortlist.
+
+**Decision: do not widen the production matcher.** Top-3 is the smallest tested list that recovered the valid match, but it introduced a real false match. Use it as a candidate configuration for evaluation on labeled real posts rather than increasing k or lowering the floor based on these fixtures. No production code or thresholds changed.
