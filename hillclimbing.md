@@ -152,3 +152,18 @@ Focused keyword and hybrid both moved all three archived positives to rank 1. Th
 None of the focused hybrid’s top-ranked candidates for the same 24 reviewed X posts asserted the same claim. For example, a screenshot about the police chief’s apology for the Brimob vehicle collision retrieved a fact-check about a Brimob sniper. A higher candidate rank is not a verdict. The archived positives and controlled examples are small, reused diagnostic sets, not a new held-out estimate.
 
 **Decision: keep full-corpus hybrid as the next experimental baseline.** It recovered all three archived positives in the top 10 without excluding a known check. Test August focus as a ranking boost rather than a hard filter, and calibrate acceptance separately on more labeled real positives. No production settings changed.
+
+## A 10% August boost improved shortlists without dropping any claims
+
+Kept all 17,571 claims and reused the full-corpus keyword + semantic ranking. Multiplied the fused rank score for the prior August-focused subset’s 73 rows by 1.10, 1.25, or 1.50, leaving every other score unchanged. Reused the same three archived positives, eight controlled assertions, and 24 reviewed X posts. No cosine cutoff or assertion verifier was applied in this ranking test.
+
+| August score boost | Archived positives at rank 1 | Archived positives in top 3 | Controlled assertions at rank 1 | Controlled assertions in top 3 | Top result changed on reviewed X posts |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| None | 1/3 | 2/3 | 7/8 | 8/8 | 0/24 |
+| +10% | 2/3 | 3/3 | 8/8 | 8/8 | 2/24 |
+| +25% | 2/3 | 3/3 | 7/8 | 8/8 | 5/24 |
+| +50% | 3/3 | 3/3 | 7/8 | 7/8 | 13/24 |
+
+All variants kept all known positives in the top 10. The +10% boost moved the archived targets from ranks 1, 4, and 2 to 1, 3, and 1. The +50% boost put all three archived targets first but pushed the Prabowo–student-protesters check, which was not eligible for the boost, from rank 1 to rank 4. None of the changed top results matched the claims in the reviewed X posts; these are candidate rankings, not accepted labels.
+
+**Decision: carry +10% forward as an experimental setting only.** It was the smallest tested boost that put all three archived positives in the top three while retaining top-three coverage on the controlled cases. Check it against unboosted hybrid on new labeled posts before adopting it. No production settings changed.
